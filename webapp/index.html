@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKA 문제 학습 앱</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>🚀 CKA 문제 학습 앱</h1>
+        <p>Certified Kubernetes Administrator 시험 대비</p>
+    </header>
+
+    <div class="container">
+        <!-- 파일 업로드 섹션 -->
+        <div class="file-upload" id="fileUpload">
+            <h3>📁 파일 업로드</h3>
+            <p>CKA 문제 데이터가 담긴 JSON 파일을 업로드해주세요</p>
+            <label for="jsonFile" class="file-label">
+                📂 JSON 파일 선택
+            </label>
+            <input type="file" id="jsonFile" class="file-input" accept=".json">
+            
+            <!-- Sequential 방식에서는 이미지 폴더 업로드 불필요 -->
+            
+            <div id="uploadStatus" style="margin-top: 1rem; font-size: 0.9rem; color: rgba(255,255,255,0.9);">
+                Sequential 방식 JSON 파일(base64 이미지 포함)을 업로드해주세요.
+            </div>
+        </div>
+
+        <!-- 모드 선택 -->
+        <div class="mode-selector" id="modeSelector" style="display: none;">
+            <button class="mode-btn active" data-mode="basic">
+                📚 기본 모드
+                <br><small>순차 학습</small>
+            </button>
+            <button class="mode-btn" data-mode="exam">
+                🎯 시험 모드  
+                <br><small>랜덤 문제</small>
+            </button>
+        </div>
+
+        <!-- 통계 -->
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stats-item">
+                <strong>전체: <span id="totalCount">0</span>문제</strong>
+            </div>
+            <div class="stats-item">
+                <strong>현재: <span id="currentIndex">0</span>번째</strong>
+            </div>
+            <div class="stats-item">
+                <strong>모드: <span id="currentMode">기본</span></strong>
+            </div>
+        </div>
+
+        <!-- 문제 카드 -->
+        <div class="quiz-card" id="quizCard" style="display: none;">
+            <div class="question-header">
+                <div class="question-number" id="questionNumber">문제 1</div>
+                <div class="progress" id="progress">1 / 68</div>
+            </div>
+
+            <div class="question-content" id="questionContent">
+                문제를 불러오는 중...
+            </div>
+
+            <!-- 질문 관련 이미지 -->
+            <div class="question-images" id="questionImages"></div>
+
+            <div class="answer-section" id="answerSection">
+                <h3 style="margin-bottom: 1rem; color: #667eea;">💡 답변</h3>
+                <div class="answer-content" id="answerContent">
+                    답변 내용이 여기에 표시됩니다.
+                </div>
+                <!-- 답변 관련 이미지 -->
+                <div class="answer-images" id="answerImages"></div>
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <button class="btn btn-secondary" id="prevBtn">
+                        ⬅️ 이전
+                    </button>
+                    <button class="btn btn-secondary" id="nextBtn">
+                        다음 ➡️
+                    </button>
+                </div>
+
+                <div>
+                    <button class="btn btn-primary" id="showAnswerBtn">
+                        💡 답변 보기
+                    </button>
+                    <button class="btn btn-success" id="randomBtn" style="display: none;">
+                        🎲 랜덤 문제
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 이미지 모달 -->
+    <div class="image-modal" id="imageModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">×</button>
+            <img class="modal-image" id="modalImage" src="" alt="확대된 이미지">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

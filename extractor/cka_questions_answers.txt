@@ -1,0 +1,1191 @@
+CKA (Certified Kubernetes Administrator) 시험 문제집
+======================================================================
+
+문제 1:
+List pod logs named "frontend" and search for the pattern "started" and write it to a file
+"/opt/error-logs"
+
+답변:
+Kubectl logs frontend | grep -i "started" > /opt/error-logs
+
+======================================================================
+
+문제 2:
+Create 2 nginx image pods in which one of them is labelled with env=prod and another one
+labelled with env=dev and verify the same.
+
+답변:
+kubectl run --generator=run-pod/v1 --image=nginx -- labels=env=prod nginx-prod --dry-run -o
+yaml > nginx-prodpod.yaml Now, edit nginx-prod-pod.yaml file and remove entries like
+"creationTimestamp: null" "dnsPolicy: ClusterFirst" vim nginx-prod-pod.yaml apiVersion: v1
+kind: Pod metadata:
+labels:
+env: prod
+name: nginx-prod
+spec:
+containers:
+- image: nginx
+name: nginx-prod
+restartPolicy: Always
+# kubectl create -f nginx-prod-pod.yaml
+kubectl run --generator=run-pod/v1 --image=nginx --
+labels=env=dev nginx-dev --dry-run -o yaml > nginx-dev-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+env: dev
+name: nginx-dev
+spec:
+containers:
+- image: nginx
+name: nginx-dev
+restartPolicy: Always
+# kubectl create -f nginx-prod-dev.yaml
+Verify :
+kubectl get po --show-labels
+kubectl get po -l env=prod
+kubectl get po -l env=dev
+
+======================================================================
+
+문제 3:
+Create an nginx pod and list the pod with different levels of verbosity
+
+답변:
+2
+// create a pod
+kubectl run nginx --image=nginx --restart=Never --port=80
+// List the pod with different verbosity
+kubectl get po nginx --v=7
+kubectl get po nginx --v=8
+kubectl get po nginx --v=9
+
+======================================================================
+
+문제 4:
+Create a pod with environment variables as var1=value1.Check the environment variable in
+pod
+
+답변:
+kubectl run nginx --image=nginx --restart=Never --env=var1=value1
+# then
+kubectl exec -it nginx -- env
+# or
+kubectl exec -it nginx -- sh -c 'echo $var1'
+# or
+kubectl describe po nginx | grep value1
+
+======================================================================
+
+문제 5:
+Given a partially-functioning Kubernetes cluster, identify symptoms of failure on the cluster.
+Determine the node, the failing service, and take actions to bring up the failed service and
+restore the health of the cluster. Ensure that any changes are made permanently.
+You can ssh to the relevant I nodes (bk8s-master-0 or bk8s-node-0) using:
+[student@node-1] $ ssh <nodename>
+You can assume elevated privileges on any node in the cluster with the following command:
+[student@nodename] $ | sudo -i
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+3
+
+======================================================================
+
+문제 6:
+List "nginx-dev" and "nginx-prod" pod and delete those pods
+
+답변:
+kubect1 get pods -o wide
+kubectl delete po "nginx-dev" kubectl delete po "nginx-prod"
+
+======================================================================
+
+문제 7:
+Monitor the logs of pod foo and:
+Extract log lines corresponding to error
+unable-to-access-website
+Write them to /opt/KULM00201/foo
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+5
+
+======================================================================
+
+문제 8:
+Create a pod as follows:
+Name: non-persistent-redis
+container Image: redis
+6
+Volume with name: cache-control
+Mount path: /data/redis
+The pod should launch in the staging namespace and the volume must not be persistent.
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+7
+
+======================================================================
+
+문제 9:
+Create a pod with image nginx called nginx and allow traffic on port 80
+
+답변:
+kubectl run nginx --image=nginx --restart=Never --port=80
+
+======================================================================
+
+문제 10:
+Task
+Scale the deployment webserver to 3 pods.
+[포함된 이미지: 2개 (base64 인코딩)]
+
+답변:
+Solution:
+
+======================================================================
+
+문제 11:
+Create a file:
+/opt/KUCC00302/kucc00302.txt that lists all pods that implement service baz in namespace
+8
+development.
+The format of the file should be one pod name per line.
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+9
+
+======================================================================
+
+문제 12:
+Create a pod named kucc8 with a single app container for each of the following images
+running inside (there may be between 1 and 4 images specified):
+nginx + redis + memcached.
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+10
+
+======================================================================
+
+문제 13:
+List all persistent volumes sorted by capacity, saving the full kubectl output to
+/opt/KUCC00102/volume_list. Use kubectl 's own functionality for sorting the output, and do
+not manipulate it any further.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+solution
+12
+
+======================================================================
+
+문제 14:
+Task
+Scale the deployment presentation to 6 pods.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+kubectl get deployment
+kubectl scale deployment.apps/presentation --replicas=6
+
+======================================================================
+
+문제 15:
+List "nginx-dev" and "nginx-prod" pod and delete those pods
+
+답변:
+kubect1 get pods -o wide
+kubectl delete po "nginx-dev" kubectl delete po "nginx-prod"
+13
+
+======================================================================
+
+문제 16:
+Create a persistent volume with name app-data, of capacity 2Gi and access mode
+ReadWriteMany. The type of volume is hostPath and its location is /srv/app-data.
+[포함된 이미지: 5개 (base64 인코딩)]
+
+답변:
+solution
+Persistent Volume
+A persistent volume is a piece of storage in a Kubernetes cluster. PersistentVolumes are a
+cluster-level resource like nodes, which don't belong to any namespace. It is provisioned by
+the administrator and has a particular file size. This way, a developer deploying their app on
+Kubernetes need not know the underlying infrastructure. When the developer needs a certain
+amount of persistent storage for their application, the system administrator configures the
+cluster so that they consume the PersistentVolume provisioned in an easy way.
+Creating Persistent Volume
+kind: PersistentVolume apiVersion: v1 metadata: name:app-data spec: capacity: # defines
+the capacity of PV we are creating storage: 2Gi #the amount of storage we are tying to claim
+accessModes: # defines the rights of the volume we are creating - ReadWriteMany hostPath:
+path: "/srv/app-data" # path to which we are creating the volume Challenge Create a
+Persistent Volume named app-data, with access mode ReadWriteMany, storage classname
+shared, 2Gi of storage capacity and the host path /srv/app-data.
+2. Save the file and create the persistent volume.
+3. View the persistent volume.
+Our persistent volume status is available meaning it is available and it has not been mounted
+yet. This status will change when we mount the persistentVolume to a
+persistentVolumeClaim.
+PersistentVolumeClaim
+14
+In a real ecosystem, a system admin will create the PersistentVolume then a developer will
+create a PersistentVolumeClaim which will be referenced in a pod. A PersistentVolumeClaim
+is created by specifying the minimum size and the access mode they require from the
+persistentVolume.
+Challenge
+Create a Persistent Volume Claim that requests the Persistent Volume we had created
+above. The claim should request 2Gi. Ensure that the Persistent Volume Claim has the same
+storageClassName as the persistentVolume you had previously created.
+kind: PersistentVolume apiVersion: v1 metadata: name:app-data
+spec:
+accessModes: - ReadWriteMany resources:
+requests: storage: 2Gi
+storageClassName: shared
+2. Save and create the pvc
+njerry191@cloudshell:~ (extreme-clone-2654111)$ kubect1 create -f app-data.yaml
+persistentvolumeclaim/app-data created
+3. View the pvc
+4. Let's see what has changed in the pv we had initially created.
+Our status has now changed from available to bound.
+5. Create a new pod named myapp with image nginx that will be used to Mount the
+Persistent Volume Claim with the path /var/app/config.
+Mounting a Claim
+apiVersion: v1 kind: Pod metadata: creationTimestamp: null name: app-data spec: volumes: -
+name:congigpvc persistenVolumeClaim: claimName: app-data containers: - image: nginx
+name: app volumeMounts: - mountPath: "/srv/app-data " name: configpvc
+
+======================================================================
+
+문제 17:
+Task
+Monitor the logs of pod bar and:
+* Extract log lines corresponding to error file-not-found
+* Write them to /opt/KUTR00101/bar
+15
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+kubectl logs bar | grep 'unable-to-access-website' > /opt/KUTR00101/bar cat
+/opt/KUTR00101/bar
+
+======================================================================
+
+문제 18:
+Check the image version in pod without the describe command
+
+답변:
+kubectl get po nginx -o
+jsonpath='{.spec.containers[].image}{"\n"}'
+
+======================================================================
+
+문제 19:
+Print pod name and start time to "/opt/pod-status" file
+
+답변:
+kubect1 get pods -o=jsonpath='{range
+.items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\n"}{end}'
+
+======================================================================
+
+문제 20:
+Task
+From the pod label name=cpu-utilizer, find pods running high CPU workloads and write the
+name of the pod consuming most CPU to the file /opt/KUTR00401/KUTR00401.txt (which
+already exists).
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+kubectl top -l name=cpu-user -A
+echo 'pod name' >> /opt/KUT00401/KUT00401.txt
+
+======================================================================
+
+문제 21:
+16
+Task
+First, create a snapshot of the existing etcd instance running at https://127.0.0.1:2379, saving
+the snapshot to /srv/data/etcd-snapshot.db.
+Next, restore an existing, previous snapshot located at /var/lib/backup/etcd-snapshot-previo
+us.db
+17
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+Solution:
+#backup
+ETCDCTL_API=3 etcdctl --endpoints="https://127.0.0.1:2379"
+--cacert=/opt/KUIN000601/ca.crt --cert=/opt/KUIN000601/etcd-client.crt
+--key=/opt/KUIN000601/etcd-client.key snapshot save /etc/data/etcd-snapshot.db
+#restore
+ETCDCTL_API=3 etcdctl --endpoints="https://127.0.0.1:2379"
+--cacert=/opt/KUIN000601/ca.crt --cert=/opt/KUIN000601/etcd-client.crt
+--key=/opt/KUIN000601/etcd-client.key snapshot restore
+/var/lib/backup/etcd-snapshot-previoys.db
+
+======================================================================
+
+문제 22:
+Create a snapshot of the etcd instance running at https://127.0.0.1:2379, saving the snapshot
+to the file path /srv/data/etcd-snapshot.db.
+The following TLS certificates/key are supplied for connecting to the server with etcdctl:
+CA certificate: /opt/KUCM00302/ca.crt
+Client certificate: /opt/KUCM00302/etcd-client.crt
+Client key: Topt/KUCM00302/etcd-client.key
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+solution
+18
+
+======================================================================
+
+문제 23:
+Get IP address of the pod - "nginx-dev"
+
+답변:
+Kubect1 get po -o wide
+Using JsonPath
+kubect1 get pods -o=jsonpath='{range
+.items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\n"}{end}'
+
+======================================================================
+
+문제 24:
+List all the pods sorted by name
+
+답변:
+kubect1 get pods --sort-by=.metadata.name
+
+======================================================================
+
+문제 25:
+19
+Task
+Given an existing Kubernetes cluster running version 1.20.0, upgrade all of the Kubernetes
+control plane and node components on the master node only to version 1.20.1.
+Be sure to drain the master node before upgrading it and uncordon it after the upgrade.
+You are also expected to upgrade kubelet and kubectl on the master node.
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+SOLUTION:
+[student@node-1] > ssh ek8s
+kubectl cordon k8s-master
+kubectl drain k8s-master --delete-local-data --ignore-daemonsets --force apt-get install
+kubeadm=1.20.1-00 kubelet=1.20.1-00 kubectl=1.20.1-00 --disableexcludes=kubernetes
+kubeadm upgrade apply 1.20.1 --etcd-upgrade=false systemctl daemon-reload systemctl
+restart kubelet kubectl uncordon k8s-master
+
+======================================================================
+
+문제 26:
+List the nginx pod with custom columns POD_NAME and POD_STATUS
+
+답변:
+kubectl get po -o=custom-columns="POD_NAME:.metadata.name,
+POD_STATUS:.status.containerStatuses[].state"
+20
+
+======================================================================
+
+문제 27:
+List all the pods sorted by created timestamp
+
+답변:
+kubect1 get pods--sort-by=.metadata.creationTimestamp
+
+======================================================================
+
+문제 28:
+Task
+Check to see how many nodes are ready (not including nodes tainted NoSchedule ) and
+write the number to /opt/KUSC00402/kusc00402.txt.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+kubectl describe nodes | grep ready|wc -l
+kubectl describe nodes | grep -i taint | grep -i noschedule |wc -l
+echo 3 > /opt/KUSC00402/kusc00402.txt
+#
+kubectl get node | grep -i ready |wc -l
+# taints、noSchedule
+kubectl describe nodes | grep -i taints | grep -i noschedule |wc -l
+#
+echo 2 > /opt/KUSC00402/kusc00402.txt
+
+======================================================================
+
+문제 29:
+Get list of all pods in all namespaces and write it to file "/opt/pods-list.yaml"
+
+답변:
+kubectl get po -all-namespaces > /opt/pods-list.yaml
+
+======================================================================
+
+문제 30:
+21
+Task
+Create a new nginx Ingress resource as follows:
+* Name: ping
+* Namespace: ing-internal
+* Exposing service hi on path /hi using service port 5678
+[포함된 이미지: 2개 (base64 인코딩)]
+
+답변:
+Solution:
+vi ingress.yaml
+#
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+name: ping
+namespace: ing-internal
+spec:
+rules:
+- http:
+paths:
+- path: /hi
+pathType: Prefix
+backend:
+service:
+name: hi
+port:
+number: 5678
+22
+#
+kubectl create -f ingress.yaml
+
+======================================================================
+
+문제 31:
+Create a deployment as follows:
+Name: nginx-random
+Exposed via a service nginx-random
+Ensure that the service & pod are accessible via their respective DNS records The
+container(s) within any pod(s) running as a part of this deployment should use the nginx
+Image Next, use the utility nslookup to look up the DNS records of the service & pod and
+write the output to /opt/KUNW00601/service.dns and /opt/KUNW00601/pod.dns respectively.
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+Solution:
+23
+
+======================================================================
+
+문제 32:
+A Kubernetes worker node, named wk8s-node-0 is in state NotReady. Investigate why this is
+the case, and perform any appropriate steps to bring the node to a Ready state, ensuring that
+any changes are made permanent.
+24
+You can ssh to the failed node using:
+[student@node-1] $ | ssh Wk8s-node-0
+You can assume elevated privileges on the node with the following command:
+[student@w8ks-node-0] $ | sudo -i
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+25
+
+======================================================================
+
+문제 33:
+26
+Task
+A Kubernetes worker node, named wk8s-node-0 is in state NotReady. Investigate why this is
+the case, and perform any appropriate steps to bring the node to a Ready state, ensuring that
+any changes are made permanent.
+[포함된 이미지: 2개 (base64 인코딩)]
+
+답변:
+Solution:
+sudo -i
+systemctl status kubelet
+systemctl start kubelet
+systemctl enable kubelet
+
+======================================================================
+
+문제 34:
+Get list of all the pods showing name and namespace with a jsonpath expression.
+
+답변:
+kubectl get pods -o=jsonpath="{.items[*]['metadata.name'
+, 'metadata.namespace']}"
+
+======================================================================
+
+문제 35:
+27
+Task
+Set the node named ek8s-node-1 as unavailable and reschedule all the pods running on it.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+SOLUTION:
+[student@node-1] > ssh ek8s
+kubectl cordon ek8s-node-1
+kubectl drain ek8s-node-1 --delete-local-data --ignore-daemonsets --force
+
+======================================================================
+
+문제 36:
+Schedule a pod as follows:
+Name: nginx-kusc00101
+Image: nginx
+Node selector: disk=ssd
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+28
+
+======================================================================
+
+문제 37:
+29
+Context
+You have been asked to create a new ClusterRole for a deployment pipeline and bind it to a
+specific ServiceAccount scoped to a specific namespace.
+Task
+Create a new ClusterRole named deployment-clusterrole, which only allows to create the
+following resource types:
+* Deployment
+* StatefulSet
+* DaemonSet
+Create a new ServiceAccount named cicd-token in the existing namespace app-team1.
+Bind the new ClusterRole deployment-clusterrole lo the new ServiceAccount cicd-token ,
+limited to the namespace app-team1.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+Task should be complete on node k8s -1 master, 2 worker for this connect use command
+[student@node-1] > ssh k8s
+kubectl create clusterrole deployment-clusterrole --verb=create --
+resource=deployments,statefulsets,daemonsets kubectl create serviceaccount cicd-token --
+namespace=app-team1 kubectl create rolebinding deployment-clusterrole --
+clusterrole=deployment-clusterrole --serviceaccount=default:cicd-token --namespace=app-
+team1
+
+======================================================================
+
+문제 38:
+Create a busybox pod and add "sleep 3600" command
+
+답변:
+kubectl run busybox --image=busybox --restart=Never -- /bin/sh -c
+"sleep 3600"
+
+======================================================================
+
+문제 39:
+Create a Kubernetes secret as follows:
+Name: super-secret
+password: bob
+Create a pod named pod-secrets-via-file, using the redis Image, which mounts a secret
+named super-secret at /secrets.
+Create a second pod named pod-secrets-via-env, using the redis Image, which exports
+password as CONFIDENTIAL
+30
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+31
+
+======================================================================
+
+문제 40:
+Perform the following tasks:
+Add an init container to hungry-bear (which has been defined in spec file
+/opt/KUCC00108/pod-spec-KUC C00108.yaml ) The init container should create an empty
+file named /workdir/calm.txt If /workdir/calm.txt is not detected, the pod should exit Once the
+spec file has been updated with the init container definition, the pod should be created
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+32
+
+======================================================================
+
+문제 41:
+List all the pods sorted by name
+
+답변:
+kubectl get pods --sort-by=.metadata.name
+
+======================================================================
+
+문제 42:
+Create a nginx pod with label env=test in engineering namespace
+
+답변:
+kubectl run nginx --image=nginx --restart=Never --labels=env=test --namespace=engineering
+--dry-run -o yaml > nginx-pod.yaml kubectl run nginx --image=nginx --restart=Never
+--labels=env=test --namespace=engineering --dry-run -o yaml | kubectl create -n engineering
+-f - YAML File:
+apiVersion: v1
+kind: Pod
+metadata:
+name: nginx
+namespace: engineering
+labels:
+env: test
+spec:
+containers:
+- name: nginx
+image: nginx
+imagePullPolicy: IfNotPresent
+34
+restartPolicy: Never
+kubectl create -f nginx-pod.yaml
+
+======================================================================
+
+문제 43:
+Set the node named ek8s-node-1 as unavailable and reschedule all the pods running on it.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+solution
+
+======================================================================
+
+문제 44:
+Check the Image version of nginx-dev pod using jsonpath
+
+답변:
+kubect1 get po nginx-dev -o
+jsonpath='{.spec.containers[].image}{"\n"}'
+
+======================================================================
+
+문제 45:
+Ensure a single instance of pod nginx is running on each node of the Kubernetes cluster
+where nginx also represents the Image name which has to be used. Do not override any
+taints currently in place.
+Use DaemonSet to complete this task and use ds-kusc00201 as DaemonSet name.
+[포함된 이미지: 4개 (base64 인코딩)]
+
+답변:
+solution
+35
+
+======================================================================
+
+문제 46:
+37
+Task
+Create a new NetworkPolicy named allow-port-from-namespace in the existing namespace
+echo. Ensure that the new NetworkPolicy allows Pods in namespace my-app to connect to
+port 9000 of Pods in namespace echo.
+Further ensure that the new NetworkPolicy:
+* does not allow access to Pods, which don't listen on port 9000
+* does not allow access from Pods, which are not in namespace my-app
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+#network.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+name: allow-port-from-namespace
+namespace: internal
+spec:
+podSelector:
+matchLabels: {
+}
+policyTypes:
+- Ingress
+ingress:
+- from:
+- podSelector: {
+}
+ports:
+- protocol: TCP
+port: 8080
+#spec.podSelector namespace pod
+kubectl create -f network.yaml
+
+======================================================================
+
+문제 47:
+38
+Task
+Schedule a pod as follows:
+* Name: nginx-kusc00401
+* Image: nginx
+* Node selector: disk=ssd
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+#yaml
+apiVersion: v1
+kind: Pod
+metadata:
+name: nginx-kusc00401
+spec:
+containers:
+- name: nginx
+image: nginx
+imagePullPolicy: IfNotPresent
+nodeSelector:
+disk: spinning
+#
+kubectl create -f node-select.yaml
+
+======================================================================
+
+문제 48:
+Create a busybox pod that runs the command "env" and save the output to "envpod" file
+
+답변:
+kubectl run busybox --image=busybox --restart=Never --rm -it -- env > envpod.yaml
+
+======================================================================
+
+문제 49:
+39
+Task
+Create a pod named kucc8 with a single app container for each of the following images
+running inside (there may be between 1 and 4 images specified): nginx + redis + memcached
+.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+kubectl run kucc8 --image=nginx --dry-run -o yaml > kucc8.yaml
+# vi kucc8.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+creationTimestamp: null
+name: kucc8
+spec:
+containers:
+- image: nginx
+name: nginx
+- image: redis
+name: redis
+- image: memcached
+name: memcached
+- image: consul
+name: consul
+#
+kubectl create -f kucc8.yaml
+#12.07
+
+======================================================================
+
+문제 50:
+Create a deployment as follows:
+Name: nginx-app
+Using container nginx with version 1.11.10-alpine
+The deployment should contain 3 replicas
+Next, deploy the application with new version 1.11.13-alpine, by performing a rolling update.
+Finally, rollback that update to the previous version 1.11.10-alpine.
+[포함된 이미지: 3개 (base64 인코딩)]
+
+답변:
+solution
+40
+
+======================================================================
+
+문제 51:
+Create a namespace called 'development' and a pod with image nginx called nginx on this
+namespace.
+
+답변:
+kubectl create namespace development
+kubectl run nginx --image=nginx --restart=Never -n development
+
+======================================================================
+
+문제 52:
+List the nginx pod with custom columns POD_NAME and POD_STATUS
+
+답변:
+kubectl get po -o=custom-columns="POD_NAME:.metadata.name,
+POD_STATUS:.status.containerStatuses[].state"
+
+======================================================================
+
+문제 53:
+Create a pod that having 3 containers in it? (Multi-Container)
+
+답변:
+image=nginx, image=redis, image=consul
+Name nginx container as "nginx-container"
+Name redis container as "redis-container"
+Name consul container as "consul-container"
+Create a pod manifest file for a container and append container
+section for rest of the images
+kubectl run multi-container --generator=run-pod/v1 --image=nginx --
+dry-run -o yaml > multi-container.yaml
+42
+# then
+vim multi-container.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+run: multi-container
+name: multi-container
+spec:
+containers:
+- image: nginx
+name: nginx-container
+- image: redis
+name: redis-container
+- image: consul
+name: consul-container
+restartPolicy: Always
+
+======================================================================
+
+문제 54:
+For this item, you will have to ssh to the nodes ik8s-master-0 and ik8s-node-0 and complete
+all tasks on these nodes. Ensure that you return to the base node (hostname: node-1) when
+you have completed this item.
+Context
+As an administrator of a small development team, you have been asked to set up a
+Kubernetes cluster to test the viability of a new application.
+Task You must use kubeadm to perform this task. Any kubeadm invocations will require the
+use of the --ignore-preflight-errors=all option.
+Configure the node ik8s-master-O as a master node. .
+Join the node ik8s-node-o to the cluster.
+
+답변:
+solution
+You must use the kubeadm configuration file located at /etc/kubeadm.conf when initializing
+your cluster.
+You may use any CNI plugin to complete this task, but if you don't have your favourite CNI
+plugin's manifest URL at hand, Calico is one popular option:
+https://docs.projectcalico.org/v3.14/manifests/calico.yaml Docker is already installed on both
+nodes and apt has been configured so that you can install the required tools.
+
+======================================================================
+
+문제 55:
+43
+Task
+Create a persistent volume with name app-data , of capacity 1Gi and access mode
+ReadOnlyMany. The type of volume is hostPath and its location is /srv/app-data .
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+#vi pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+name: app-config
+spec:
+capacity:
+storage: 1Gi
+accessModes:
+- ReadOnlyMany
+hostPath:
+path: /srv/app-config
+#
+kubectl create -f pv.yaml
+
+======================================================================
+
+문제 56:
+Check to see how many worker nodes are ready (not including nodes tainted NoSchedule)
+and write the number to /opt/KUCC00104/kucc00104.txt.
+[포함된 이미지: 2개 (base64 인코딩)]
+
+답변:
+solution
+44
+
+======================================================================
+
+문제 57:
+List all the pods showing name and namespace with a json path expression
+
+답변:
+kubectl get pods -o=jsonpath="{.items[*]['metadata.name',
+45
+'metadata.namespace']}"
+
+======================================================================
+
+문제 58:
+Scale the deployment webserver to 6 pods.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+solution
+
+======================================================================
+
+문제 59:
+Create a pod as follows:
+Name: mongo
+Using Image: mongo
+In a new Kubernetes namespace named: my-website
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+solution
+46
+
+======================================================================
+
+문제 60:
+Configure the kubelet systemd- managed service, on the node labelled with name=wk8s
+-node-1, to launch a pod containing a single container of Image httpd named webtool
+automatically. Any spec files required should be placed in the /etc/kubernetes/manifests
+directory on the node.
+You can ssh to the appropriate node using:
+[student@node-1] $ ssh wk8s-node-1
+You can assume elevated privileges on the node with the following command:
+[student@wk8s-node-1] $ | sudo -i
+[포함된 이미지: 5개 (base64 인코딩)]
+
+답변:
+solution
+47
+
+======================================================================
+
+문제 61:
+Task
+Create a new PersistentVolumeClaim
+* Name: pv-volume
+* Class: csi-hostpath-sc
+* Capacity: 10Mi
+Create a new Pod which mounts the PersistentVolumeClaim as a volume:
+* Name: web-server
+* Image: nginx
+* Mount path: /usr/share/nginx/html
+Configure the new Pod to have ReadWriteOnce access on the volume.
+Finally, using kubectl edit or kubectl patch expand the PersistentVolumeClaim to a capacity
+of 70Mi and record that change.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+50
+Solution:
+vi pvc.yaml
+storageclass pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+name: pv-volume
+spec:
+accessModes:
+- ReadWriteOnce
+volumeMode: Filesystem
+resources:
+requests:
+storage: 10Mi
+storageClassName: csi-hostpath-sc
+# vi pod-pvc.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+name: web-server
+spec:
+containers:
+- name: web-server
+image: nginx
+volumeMounts:
+- mountPath: "/usr/share/nginx/html"
+name: my-volume
+volumes:
+- name: my-volume
+persistentVolumeClaim:
+claimName: pv-volume
+# craete
+kubectl create -f pod-pvc.yaml
+#edit
+kubectl edit pvc pv-volume --record
+
+======================================================================
+
+문제 62:
+51
+Context
+An existing Pod needs to be integrated into the Kubernetes built-in logging architecture (e. g.
+kubectl logs). Adding a streaming sidecar container is a good and common way to
+accomplish this requirement.
+Task
+Add a sidecar container named sidecar, using the busybox Image, to the existing Pod big-
+corp-app. The new sidecar container has to run the following command:
+/bin/sh -c tail -n+1 -f /va r/log/big-corp-app.log
+Use a Volume, mounted at /var/log, to make the log file big-corp-app.log available to the
+sidecar container.
+[포함된 이미지: 2개 (base64 인코딩)]
+
+답변:
+Solution:
+#
+kubectl get pod big-corp-app -o yaml
+#
+apiVersion: v1
+kind: Pod
+metadata:
+name: big-corp-app
+spec:
+containers:
+- name: big-corp-app
+image: busybox
+args:
+- /bin/sh
+- -c
+- >
+i=0;
+while true;
+52
+do
+echo "$(date) INFO $i" >> /var/log/big-corp-app.log;
+i=$((i+1));
+sleep 1;
+done
+volumeMounts:
+- name: logs
+mountPath: /var/log
+- name: count-log-1
+image: busybox
+args: [/bin/sh, -c, 'tail -n+1 -f /var/log/big-corp-app.log']
+volumeMounts:
+- name: logs
+mountPath: /var/log
+volumes:
+- name: logs
+emptyDir: {
+}
+#
+kubectl logs big-corp-app -c count-log-1
+
+======================================================================
+
+문제 63:
+Create and configure the service front-end-service so it's accessible through NodePort and
+routes to the existing pod named front-end.
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+solution
+53
+
+======================================================================
+
+문제 64:
+From the pod label name=cpu-utilizer, find pods running high CPU workloads and write the
+name of the pod consuming most CPU to the file /opt/KUTR00102/KUTR00102.txt (which
+already exists).
+[포함된 이미지: 2개 (base64 인코딩)]
+
+답변:
+solution
+54
+
+======================================================================
+
+문제 65:
+Create a deployment spec file that will:
+Launch 7 replicas of the nginx Image with the label app_runtime_stage=dev deployment
+name: kual00201 Save a copy of this spec file to /opt/KUAL00201/spec_deployment.yaml (or
+55
+/opt/KUAL00201/spec_deployment.json).
+When you are done, clean up (delete) any new Kubernetes API object that you produced
+during this task.
+[포함된 이미지: 2개 (base64 인코딩)]
+
+답변:
+solution
+56
+
+======================================================================
+
+문제 66:
+Create a pod that echo "hello world" and then exists. Have the pod deleted automatically
+when it's completed
+
+답변:
+kubectl run busybox --image=busybox -it --rm --restart=Never --
+/bin/sh -c 'echo hello world'
+kubectl get po # You shouldn't see pod with the name "busybox"
+
+======================================================================
+
+문제 67:
+Task
+Reconfigure the existing deployment front-end and add a port specification named http
+exposing port 80/tcp of the existing container nginx.
+Create a new service named front-end-svc exposing the container port http.
+Configure the new service to also expose the individual Pods via a NodePort on the nodes on
+which they are scheduled.
+57
+[포함된 이미지: 1개 (base64 인코딩)]
+
+답변:
+Solution:
+kubectl get deploy front-end
+kubectl edit deploy front-end -o yaml
+#port specification named http
+#service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+name: front-end-svc
+labels:
+app: nginx
+spec:
+ports:
+- port: 80
+protocol: tcp
+name: http
+selector:
+app: nginx
+type: NodePort
+# kubectl create -f service.yaml
+# kubectl get svc
+# port specification named http
+kubectl expose deployment front-end --name=front-end-svc --port=80 --tarport=80 --
+type=NodePort
+
+======================================================================
+
+문제 68:
+Task
+Schedule a Pod as follows:
+* Name: kucc1
+* App Containers: 2
+* Container Name/Images:
+o nginx
+o consul
+[포함된 이미지: 4개 (base64 인코딩)]
+
+답변:
+Solution:
+58
+
+======================================================================
+
